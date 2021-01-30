@@ -704,7 +704,8 @@ london_coor <- c(-0.200894,51.448607,0.046299,51.533686)
 streets <-  opq(london_coor) %>%
   add_osm_feature(key = "highway", 
                   value = c("motorway", "primary", 
-                            "secondary", "tertiary")) %>%
+                            "secondary", "tertiary",
+                            "residential")) %>%
   osmdata_sf()
 
 water_osm <- opq(london_coor) %>%
@@ -713,7 +714,8 @@ water_osm <- opq(london_coor) %>%
   unname_osmdata_sf()
 
 river_osm <- opq(london_coor) %>%
-  add_osm_feature(key = "waterway", value = c("river", "riverbank", "stream", "ditch", "canal",
+  add_osm_feature(key = "waterway", value = c("river", "riverbank",
+                                              "stream", "ditch", "canal",
                                               "dam", "weir")) %>%
   osmdata_sf() %>% 
   unname_osmdata_sf()
@@ -726,7 +728,12 @@ water <- c(water_osm, river_osm) %>%
   filter(area >= quantile(area, probs = 0.75))
 
 # Add points
-dot <- data.frame(x =  51.4876792,  y = -0.1686188)
+dot <- data.frame(x =  c(51.48618435476622,
+                         51.47251645371745,
+                         51.52035454910605),  
+                  y = c(-0.18407765960294045,
+                        -0.15971343976518346,
+                        -0.09301392574292187))
 
 # Map
 ggplot() +
@@ -755,7 +762,7 @@ ggplot() +
           fill = "grey",
           size = 0.5,
           alpha = 0.5) +
-  geom_point(data = pub, aes(y, x), col= "darkred", size= 1) +
+  geom_point(data = dot, aes(y, x), col= "darkred", size= 1) +
   theme_void() +
   theme(
     plot.background = element_rect(fill = "#282828")
@@ -764,13 +771,17 @@ ggplot() +
            ylim = c(51.42 , 51.565))
 
 #-----------------------Singapore map ---------------------------------
+#Get singapore coordinates
 singapore_cor <- getbb("Singapore")
 
-streets <- opq(singapore_coor) %>%
-  add_osm_feature(key = "highway", 
-                  value = c("motorway", "primary", 
-                            "secondary", "tertiary",
-                            "residential")) %>%
+#Select objects to map
+streets <- opq(singapore_cor) %>%
+  add_osm_feature(
+    key = "highway", 
+    value = c("motorway", "primary", 
+              "secondary", "tertiary",
+              "residential")
+  ) %>%
   osmdata_sf()
 
 island <-  opq(singapore_cor) %>%
@@ -779,13 +790,18 @@ island <-  opq(singapore_cor) %>%
   osmdata_sf()
 
 water_osm <- opq(singapore_cor) %>%
-  add_osm_feature(key = "natural", value = "water") %>%
+  add_osm_feature(key = "natural", 
+                  value = "water") %>%
   osmdata_sf() %>% 
   unname_osmdata_sf()
 
 river_osm <- opq(singapore_cor) %>%
-  add_osm_feature(key = "waterway", value = c("river", "riverbank", "stream", "ditch", "canal",
-                                              "dam", "weir")) %>%
+  add_osm_feature(
+    key = "waterway", 
+    value = c("river", "riverbank", "stream", 
+              "ditch", "canal",
+              "dam", "weir")
+  ) %>%
   osmdata_sf() %>% 
   unname_osmdata_sf()
 
@@ -797,7 +813,8 @@ water <- c(water_osm, river_osm) %>%
   filter(area >= quantile(area, probs = 0.75))
 
 # Add points
-dot <- data.frame(x =  1.2951259642020152,  y = 103.84675255327105)
+dot <- data.frame(x =  1.2951259642020152, 
+                  y = 103.84675255327105)
 
 # Map
 ggplot() +
@@ -833,7 +850,8 @@ ggplot() +
           size = 0.5,
           alpha = 0.5) +
   geom_point(data = dot, 
-             aes(x = y, y = x), 
+             aes(x = y, 
+                 y = x), 
              col= "darkred",
              size= 2) +
   theme_void() +
